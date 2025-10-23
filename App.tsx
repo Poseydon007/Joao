@@ -67,7 +67,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-gray-100 font-sans">
+    <div className="flex flex-col h-full bg-gray-900 text-gray-100 font-sans">
         <header className="flex items-center justify-center p-4 bg-gray-800 border-b border-gray-700 shadow-lg">
             <h1 className="text-xl font-bold text-center text-white">
                 <span className="text-cyan-400">Ecosystem Mining</span> Virtual Assistant
