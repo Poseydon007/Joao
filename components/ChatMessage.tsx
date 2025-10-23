@@ -3,11 +3,11 @@
 import React from 'react';
 import type { Message } from '../types';
 import { Sender } from '../types';
-// Fix: Aliased the import from LOGO_URL to BOT_AVATAR_IMAGE to match what is exported from assets.ts.
 import { LOGO_URL as BOT_AVATAR_IMAGE } from '../assets';
 
 interface ChatMessageProps {
   message: Message;
+  center?: boolean;
 }
 
 const BotAvatar = () => (
@@ -81,7 +81,7 @@ const MarkdownRenderer: React.FC<{ text: string }> = ({ text }) => {
 };
 
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, center = false }) => {
   const isBot = message.sender === Sender.BOT;
 
   // Don't render empty bot messages (placeholders for streaming)
@@ -90,12 +90,22 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   }
 
   return (
-    <div className={`flex items-start gap-4 my-4 ${isBot ? '' : 'flex-row-reverse'}`}>
+    <div className={`flex gap-4 my-4 ${
+        center 
+        ? 'flex-col items-center' 
+        : `items-start ${isBot ? '' : 'flex-row-reverse'}`
+    }`}>
       {isBot && <BotAvatar />}
       <div className={`max-w-lg lg:max-w-xl px-5 py-3 rounded-2xl shadow-md ${
           isBot 
-          ? 'bg-gray-700 rounded-bl-none' 
-          : 'bg-blue-600 text-white rounded-br-none'
+          ? 'bg-gray-700' 
+          : 'bg-blue-600 text-white'
+      } ${
+          // Only apply directional rounding if not centered
+          !center && (isBot ? 'rounded-bl-none' : 'rounded-br-none')
+      } ${
+          // Center text if the whole component is centered
+          center ? 'text-center' : ''
       }`}>
         <MarkdownRenderer text={message.text} />
       </div>
