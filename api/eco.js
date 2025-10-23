@@ -1,18 +1,25 @@
-// Force Node runtime (not Edge)
-export const config = { runtime: 'nodejs20.x' };
+export const config = { runtime: 'edge' }; // ✅ valid on Vercel
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export default async function handler(req, res) {
-  try {
-    // CORS (so Hostinger can call it)
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'content-type');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    if (req.method === 'OPTIONS') return res.status(204).end();
-    if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' });
+const json = (obj, status = 200) =>
+  new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'content-type': 'application/json',
+      'access-control-allow-origin': '*',
+      'access-control-allow-headers': 'content-type',
+      'access-control-allow-methods': 'POST, OPTIONS'
+    }
+  });
 
-    const { messages = [] } = req.body || {};
+export default async function handler(req) {
+  try {
+    if (req.method === 'OPTIONS') return json({}, 204);
+    if (req.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405);
+
+    const body = await req.json().catch(() => ({}));
+    const { messages = [] } = body;
 
     const SYSTEM = `You are Eco, the multilingual assistant for Ecosystem Mining.
 Reply in the user's language (ar/en/es/pt). Be concise (<=120 words unless asked).
@@ -23,14 +30,13 @@ Help with services, experience, RFQ intake, meetings. No pricing/legal commitmen
 
     const contents = [
       { role: 'user', parts: [{ text: SYSTEM }] },
-      ...messages.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
+      ...messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))
     ];
 
     const result = await model.generateContent({ contents });
     const text = result?.response?.text?.() ?? 'No response';
-    return res.status(200).json({ ok: true, text });
+    return json({ ok: true, text });
   } catch (e) {
-    console.error('Eco error:', e);
-    return res.status(500).json({ ok: false, error: 'Eco backend error' });
+    return json({ ok: false, error: 'Eco backend error' }, 500);
   }
 }
