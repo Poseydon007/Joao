@@ -7,11 +7,12 @@ import { Sender } from './types';
 import { INITIAL_GREETING, SUGGESTED_PROMPTS } from './constants';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
-import { MinimizeIcon } from './components/Icons';
+import { MinimizeIcon, ChatBubbleIcon } from './components/Icons';
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -74,20 +75,33 @@ const App: React.FC = () => {
     }
   };
 
-  const handleMinimize = () => {
-    window.parent.postMessage({ type: 'ECO_CHATBOT_MINIMIZE' }, '*');
+  const toggleChat = () => {
+    setIsMinimized(prev => !prev);
   };
 
+  if (isMinimized) {
+    return (
+      <div className="w-full h-full flex justify-end items-end p-4">
+        <button
+          onClick={toggleChat}
+          className="p-4 bg-cyan-600 text-white rounded-full shadow-lg hover:bg-cyan-500 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white"
+          aria-label="Open chat"
+        >
+          <ChatBubbleIcon />
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-gray-900 text-gray-100 font-sans">
+    <div className="grid grid-rows-[auto_1fr_auto] h-screen bg-gray-900 text-gray-100 font-sans rounded-xl overflow-hidden shadow-2xl">
         <header className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700 shadow-lg">
              <div className="w-8"></div> {/* Spacer to balance the header */}
             <h1 className="text-xl font-bold text-center text-white">
                 <span className="text-cyan-400">Ecosystem Mining</span> Virtual Assistant
             </h1>
              <button 
-                onClick={handleMinimize} 
+                onClick={toggleChat} 
                 className="p-1 text-gray-400 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white transition-all" 
                 aria-label="Minimize chat"
             >

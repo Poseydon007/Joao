@@ -3,22 +3,11 @@
 import React from 'react';
 import type { Message } from '../types';
 import { Sender } from '../types';
-import { LOGO_URL as BOT_AVATAR_IMAGE } from '../assets';
 
 interface ChatMessageProps {
   message: Message;
   center?: boolean;
 }
-
-const BotAvatar = () => (
-    <div className="w-10 h-10 rounded-full flex-shrink-0 shadow-md">
-       <img 
-          src={BOT_AVATAR_IMAGE} 
-          alt="Eco, the Ecosystem Mining assistant" 
-          className="w-full h-full rounded-full object-cover"
-      />
-    </div>
-);
 
 // Parses inline markdown like **bold** and *italic*
 const parseInline = (text: string): React.ReactNode[] => {
@@ -90,12 +79,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, center = fals
   }
 
   return (
-    <div className={`flex gap-4 my-4 ${
+    <div className={`flex my-4 ${
         center 
         ? 'flex-col items-center' 
         : `items-start ${isBot ? '' : 'flex-row-reverse'}`
     }`}>
-      {isBot && <BotAvatar />}
       <div className={`max-w-lg lg:max-w-xl px-5 py-3 rounded-2xl shadow-md ${
           isBot 
           ? 'bg-gray-700' 
