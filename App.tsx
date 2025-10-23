@@ -12,7 +12,7 @@ import { MinimizeIcon, ChatBubbleIcon } from './components/Icons';
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_GREETING]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isMinimized, setIsMinimized] = useState<boolean>(false);
+  const [isMinimized, setIsMinimized] = useState<boolean>(true); // Start minimized
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -75,16 +75,12 @@ const App: React.FC = () => {
     }
   };
 
-  const toggleChat = () => {
-    setIsMinimized(prev => !prev);
-  };
-
   if (isMinimized) {
     return (
-      <div className="w-full h-full flex justify-end items-end p-4">
+      <div className="fixed bottom-5 right-5 z-50">
         <button
-          onClick={toggleChat}
-          className="p-4 bg-cyan-600 text-white rounded-full shadow-lg hover:bg-cyan-500 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white"
+          onClick={() => setIsMinimized(false)}
+          className="w-16 h-16 bg-cyan-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-cyan-500 focus:outline-none focus:ring-4 focus:ring-cyan-400/50 transition-all animate-pulse"
           aria-label="Open chat"
         >
           <ChatBubbleIcon />
@@ -101,7 +97,7 @@ const App: React.FC = () => {
                 <span className="text-cyan-400">Ecosystem Mining</span> Virtual Assistant
             </h1>
              <button 
-                onClick={toggleChat} 
+                onClick={() => setIsMinimized(true)} 
                 className="p-1 text-gray-400 rounded-full hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white transition-all" 
                 aria-label="Minimize chat"
             >
